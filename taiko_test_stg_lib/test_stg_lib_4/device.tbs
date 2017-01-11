@@ -1,0 +1,147 @@
+include "global.tbh"
+
+'--------------------------------------------------------------------
+dim pattern_num as byte
+dim comms_sock as byte
+
+'====================================================================
+sub callback_stg_error(byref stg_name_or_num as string,index as byte,status as en_stg_status_codes)
+	sys.halt
+end sub
+
+'--------------------------------------------------------------------
+sub callback_stg_pre_get(byref stg_name_or_num as string,index as byte,byref stg_value as string)
+	if stg_name_or_num="CPTN" then
+		stg_value=str(pattern_num)
+	end if
+end sub
+
+'--------------------------------------------------------------------
+sub callback_stg_post_set(byref stg_name_or_num as string, index as byte,byref stg_value as string)
+	if stg_name_or_num="CPTN" then
+		pattern_num=val(stg_value)
+		pat.play("-",PL_PAT_CANINT)
+	end if
+end sub
+
+'--------------------------------------------------------------------
+sub play_next_pattern()
+	dim x as byte
+	
+	stg_get_num_members("PTN",x)
+	pattern_num=pattern_num+1
+	if pattern_num>=x then pattern_num=0
+	pat.play(stg_get("PTN",pattern_num),PL_PAT_CANINT)
+end sub
+
+'--------------------------------------------------------------------
+sub comms_init()
+	net.ip=stg_get("IP",0)	
+	
+	comms_sock=sock_get("COMM")
+	if comms_sock=255 then sys.halt
+	
+	sock.num=comms_sock
+	sock.rxbuffrq(1)
+	sock.txbuffrq(1)
+	sys.buffalloc
+	
+	sock.protocol=PL_SOCK_PROTOCOL_TCP
+	sock.localportlist=stg_get("PN",0)
+	sock.inconmode=PL_SOCK_INCONMODE_ANY_IP_ANY_PORT
+	sock.reconmode=PL_SOCK_RECONMODE_3
+end sub
+
+'--------------------------------------------------------------------
+sub comms_proc_cmd()
+	dim pos as byte
+	dim s as string
+	dim stg_name as string(STG_MAX_SETTING_NAME_LEN)
+	dim stg_value as string(STG_MAX_SETTING_VALUE_LEN)
+	dim index as byte
+	dim result as en_stg_status_codes
+	
+	if sock.num=comms_sock then
+		pos=instr(1,sock.peekdata(255),chr(13),1) 'is there CR in the buffer
+		if pos=0 then
+			'this is to prevent buffer overflow with garbage
+			if sock.rxlen=sock.txbuffsize then
+				s=sock.getdata(255)
+			end if
+		else
+			'yes, there is CR -- we have a complete command
+			s=sock.getdata(pos)
+			s=left(s,len(s)-1)
+			
+			'eliminate LF if present
+			if asc(left(s,1))=10 then
+				s=right(s,len(s)-1)
+			end if
+
+			'process this command
+			select case asc(left(s,1))
+			case `S`:
+				'set setting, is index specified?
+				s=right(s,len(s)-1)
+				pos=instr(1,s,",",1)
+				if pos=0 then
+					stg_name=s
+					index=0
+				else
+					stg_name=left(s,pos-1)
+					index=val(mid(s,pos+1,255))
+				end if
+				
+				'is value specified?
+				s=mid(s,pos+1,255)
+				pos=instr(1,s,",",1)
+				if pos=0 then
+					stg_value=0
+				else
+					stg_value=mid(s,pos+1,255)
+				end if
+				
+				result=stg_sg(stg_name,index,stg_value,EN_STG_SET)
+				s=""
+			
+			case `G`:
+				'get setting, is index specified? 
+				s=right(s,len(s)-1)
+				pos=instr(1,s,",",1)
+				if pos=0 then
+					stg_name=s
+					index=0
+				else
+					stg_name=left(s,pos-1)
+					index=val(mid(s,pos+1,255))
+				end if
+			
+				result=stg_sg(stg_name,index,s,EN_STG_GET)
+			
+			case else:
+				result=EN_STG_STATUS_UNKNOWN
+			end select
+
+			'common portion -- generate reply
+			select case result
+			case EN_STG_STATUS_OK:
+				s="A"+s
+		
+			case EN_STG_STATUS_UNKNOWN, EN_STG_STATUS_INVALID_INDEX:
+				s="C" 'invalid setting name or index
+			
+			case EN_STG_STATUS_FAILURE:
+				s="F" 'failure (hardware, etc.)
+			
+			case EN_STG_STATUS_INVALID:
+				s="I" 'invalid value
+			
+			case else:
+				s="U" 'some internal error
+			end select
+
+			sock.setdata(s)
+			sock.send
+		end if
+	end if
+end sub

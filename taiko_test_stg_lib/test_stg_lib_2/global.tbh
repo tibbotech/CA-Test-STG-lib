@@ -1,0 +1,5 @@
+'DEFINES-------------------------------------------------------------
+
+'INCLUDES------------------------------------------------------------
+include "settings\trunk\settings.tbh"
+includepp "settings.txt" 'this will allow you to put #defines directly into settings.txt

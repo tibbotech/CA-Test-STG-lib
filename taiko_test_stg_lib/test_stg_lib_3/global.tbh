@@ -1,0 +1,10 @@
+'DEFINES-------------------------------------------------------------
+
+'INCLUDES------------------------------------------------------------
+include "settings\trunk\settings.tbh"
+includepp "settings.txt" 'this will allow you to put #defines directly into settings.txt
+include "sock\trunk\sock.tbh"
+
+'DECLARATIONS--------------------------------------------------------
+declare sub comms_init()
+declare sub comms_proc_cmd()

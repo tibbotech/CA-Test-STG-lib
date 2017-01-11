@@ -1,0 +1,6 @@
+include "global.tbh"
+
+'====================================================================
+sub on_sys_init()
+	if stg_start()<>EN_STG_STATUS_OK then sys.halt
+end sub

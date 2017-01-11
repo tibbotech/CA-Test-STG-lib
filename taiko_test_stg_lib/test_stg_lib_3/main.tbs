@@ -1,0 +1,37 @@
+include "global.tbh"
+
+'====================================================================
+sub on_sys_init()
+	dim x as en_stg_status_codes
+	dim stg_name as string(STG_MAX_SETTING_NAME_LEN)
+	
+	if stg_start()<>EN_STG_STATUS_OK then sys.halt
+
+	x=stg_check_all(stg_name)
+	select case x
+	case EN_STG_STATUS_OK:
+		'--- all good ---
+	
+	case EN_STG_STATUS_INVALID, EN_STG_STATUS_FAILURE:
+		if stg_restore_multiple(EN_STG_INIT_MODE_NORMAL)<>EN_STG_STATUS_OK then sys.halt
+	
+	case else:
+		'some other trouble
+		sys.halt
+	end select
+
+	comms_init()
+end sub
+
+'--------------------------------------------------------------------
+sub on_button_released()
+	if button.time>4 then
+		if stg_restore_multiple(EN_STG_INIT_MODE_NORMAL)<>EN_STG_STATUS_OK then sys.halt
+		sys.reboot
+	end if
+end sub
+
+'--------------------------------------------------------------------
+sub on_sock_data_arrival()
+	comms_proc_cmd()
+end sub

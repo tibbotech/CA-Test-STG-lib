@@ -1,5 +1,9 @@
-# CA-Test-STG-lib
+# STG (Settings) Library Demo
 
-To download the most recent project without installing GIT, please press the green "Clone or Download" button and select "Download ZIP".
+This download contains four separate demo projects, corresponding to those described in the STG (Settings) library [documentation](http://docs.tibbo.com/taiko/lib_stg.htm):
 
-For more detail about this project, please visit <a href="http://tibbo.com/programmable/applications/examples/lib_stg.html" target="_blank">Project Description Page</a>
+- [Step 1: An Embryonic Project](http://docs.tibbo.com/taiko/lib_stg_code_example_embryo.htm)
+- [Step 2: Adding Setting Initialization](http://docs.tibbo.com/taiko/lib_stg_code_add_init.htm)
+- [Step 3: Adding Comms](http://docs.tibbo.com/taiko/lib_stg_code_add_comms.htm)
+- [Step 4: Completing the Project](http://docs.tibbo.com/taiko/lib_stg_code_completing.htm)
+

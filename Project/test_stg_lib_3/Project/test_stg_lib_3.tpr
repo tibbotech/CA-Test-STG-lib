@@ -1,0 +1,107 @@
+[project]
+platform = TPP3W(G2)
+src_lib_ver = 2_01_03
+name = test_stg_lib_3
+output = test_stg_lib_3.tpc
+debug = on
+watch = 
+defines = /dOBJECT_FD=FD_ENABLED /dOBJECT_KP=KP_ENABLED /dOBJECT_WLN=WLN_ENABLED
+transport = udp_winpcap
+
+[address1]
+transport = udp_winpcap
+address = 0.9.5.2.7.6
+
+[file1]
+line = 0
+cursor = 936
+path = main.tbs
+type = basic
+format = 
+condition = 
+opened = yes
+locked = no
+location = 
+breakpoints = 
+
+[file2]
+line = 0
+cursor = 431
+path = global.tbh
+type = header
+format = 
+condition = 
+opened = yes
+locked = no
+location = 
+breakpoints = 
+
+[file3]
+line = 78
+cursor = 3238
+path = device.tbs
+type = basic
+format = 
+condition = 
+opened = active
+locked = no
+location = 
+breakpoints = 
+
+[file4]
+line = 15
+cursor = 0
+path = settings\trunk\settings.tbs
+type = basic
+format = 
+condition = 
+opened = yes
+locked = yes
+location = commonlib
+breakpoints = 
+
+[file5]
+line = 83
+cursor = 5893
+path = settings\trunk\settings.tbh
+type = header
+format = 
+condition = 
+opened = yes
+locked = yes
+location = commonlib
+breakpoints = 
+
+[file6]
+path = settings.txt
+type = text
+format = 
+condition = 
+opened = yes
+locked = no
+location = project
+
+[file7]
+line = 0
+cursor = 0
+path = sock\trunk\sock.tbs
+type = basic
+format = 
+condition = 
+opened = yes
+locked = yes
+location = commonlib
+breakpoints = 
+
+[file8]
+line = 0
+cursor = 0
+path = sock\trunk\sock.tbh
+type = header
+format = 
+condition = 
+opened = yes
+locked = yes
+location = commonlib
+breakpoints = 
+
